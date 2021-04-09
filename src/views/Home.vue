@@ -26,9 +26,7 @@ export default {
     TagCloud,
   },
   setup() {
-    let { posts, error, load } = getPosts();
-
-    load();
+    let { posts, error } = getPosts("posts");
 
     return { posts, error };
   },

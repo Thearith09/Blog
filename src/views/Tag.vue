@@ -26,9 +26,7 @@ export default {
   },
   setup() {
     const route = useRoute();
-    const { posts, error, load } = getPosts();
-
-    load();
+    const { posts, error } = getPosts("posts");
 
     const postsWithTag = computed(() => {
       return posts.value.filter((post) => post.tags.includes(route.params.tag));

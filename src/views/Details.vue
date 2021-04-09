@@ -24,9 +24,7 @@ export default {
   setup(props) {
     const router = useRouter();
     const route = useRoute();
-    const { post, error, load } = getPost(route.params.id);
-
-    load();
+    const { post, error } = getPost("posts", route.params.id);
 
     const handleDelete = async () => {
       await projectFirestore
