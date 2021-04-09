@@ -1,9 +1,57 @@
 <template>
-  Create
+  <div class="create">
+    <form @submit.prevent="handleSubmit">
+      <label>Title:</label>
+      <input v-model="title" type="text" required />
+      <label>Content:</label>
+      <textarea v-model="body" required></textarea>
+      <label>Tags (hits enter to add a tag)</label>
+      <input v-model="tag" type="text" @keydown.enter.prevent="handleKeydown" />
+      <div v-for="tag in tags" :key="tag" class="pill">#{{ tag }}</div>
+      <button>Add Post</button>
+    </form>
+  </div>
 </template>
 
 <script>
-export default {};
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { projectFirestore, timestamp } from "../firebase/config";
+export default {
+  setup() {
+    let title = ref("");
+    let body = ref("");
+    let tag = ref("");
+    let tags = ref([]);
+    const router = useRouter();
+
+    const handleKeydown = () => {
+      if (!tags.value.includes(tag.value)) {
+        tag.value = tag.value.replace(/\s/, "");
+        tags.value.push(tag.value);
+      }
+
+      tag.value = "";
+    };
+
+    const handleSubmit = async () => {
+      const post = {
+        title: title.value,
+        body: body.value,
+        tags: tags.value,
+        createdAt: timestamp(),
+      };
+      await projectFirestore.collection("posts").add(post);
+
+      title.value = "";
+      body.value = "";
+      tags.value = [];
+      router.push({ name: "Home" });
+    };
+
+    return { title, body, tag, handleKeydown, tags, handleSubmit };
+  },
+};
 </script>
 
 <style>
@@ -41,7 +89,8 @@ label::before {
   position: absolute;
   z-index: -1;
   padding-right: 40px;
-  transform: L rotateZ(-1.5deg);
+  left: -30px;
+  transform: rotateZ(-1.5deg);
 }
 button {
   display: block;
